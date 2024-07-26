@@ -14,6 +14,7 @@ mkdir -p work/
 
 cp -R prometheus-collector/AddonBicepTemplate/ work/
 
+echo "generating param template"
 jq --arg sub_id "$SUBSCRIPTION_ID" \
    --arg rg_name "$RESOURCE_GROUP" \
    --arg amw_name "$AMW_NAME" \
@@ -21,8 +22,6 @@ jq --arg sub_id "$SUBSCRIPTION_ID" \
    --arg amw_location "$LOCATION" \
    --arg cluster_name "$CLUSTER_NAME" \
    --arg cluster_location "$LOCATION" \
-   --arg grafana_location "$LOCATION" \
-   --arg grafana_admin_object_id "$GRAFANA_ADMIN_OBJECT_ID" \
    '.parameters.azureMonitorWorkspaceResourceId.value |= gsub("\\{sub_id\\}"; $sub_id) |
     .parameters.azureMonitorWorkspaceResourceId.value |= gsub("\\{rg_name\\}"; $amw_rg_name) |
     .parameters.azureMonitorWorkspaceResourceId.value |= gsub("\\{amw_name\\}"; $amw_name) |
@@ -30,12 +29,7 @@ jq --arg sub_id "$SUBSCRIPTION_ID" \
     .parameters.clusterResourceId.value |= gsub("\\{sub_id\\}"; $sub_id) |
     .parameters.clusterResourceId.value |= gsub("\\{rg_name\\}"; $rg_name) |
     .parameters.clusterResourceId.value |= gsub("\\{cluster_name\\}"; $cluster_name) |
-    .parameters.clusterLocation.value |= gsub("\\{clusterLocation\\}"; $cluster_location) |
-    .parameters.grafanaResourceId.value |= gsub("\\{sub_id\\}"; $sub_id) |
-    .parameters.grafanaResourceId.value |= gsub("\\{rg_name\\}"; $amw_rg_name) |
-    .parameters.grafanaResourceId.value |= gsub("\\{cluster_name\\}"; $cluster_name) |
-    .parameters.grafanaLocation.value |= gsub("\\{grafanaLocation\\}"; $grafana_location) |
-    .parameters.grafanaAdminObjectId.value |= gsub("\\{grafanaAdminObjectId\\}"; $grafana_admin_object_id)' \
+    .parameters.clusterLocation.value |= gsub("\\{clusterLocation\\}"; $cluster_location)' \
    work/AddonBicepTemplate/FullAzureMonitorMetricsProfileParameters.json > work/AddonBicepTemplate/tmp.json && \
    mv work/AddonBicepTemplate/tmp.json work/AddonBicepTemplate/FullAzureMonitorMetricsProfileParameters.json
 

@@ -4,13 +4,7 @@ param clusterResourceId string
 param clusterLocation string
 param metricLabelsAllowlist string
 param metricAnnotationsAllowList string
-param grafanaResourceId string
-param grafanaLocation string
-param grafanaSku string
-param grafanaAdminObjectId string
 
-@description('A new GUID used to identify the role assignment')
-param roleNameGuid string = guid(azureMonitorWorkspaceResourceId, grafanaResourceId)
 var azureMonitorWorkspaceSubscriptionId = split(azureMonitorWorkspaceResourceId, '/')[2]
 var clusterSubscriptionId = split(clusterResourceId, '/')[2]
 var clusterResourceGroup = split(clusterResourceId, '/')[4]
