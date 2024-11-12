@@ -1,0 +1,112 @@
+apiVersion: v1
+items:
+- apiVersion: monitoring.coreos.com/v1
+  kind: PrometheusRule
+  metadata:
+    annotations:
+      network.operator.openshift.io/cluster-name: management
+      networkoperator.openshift.io/ignore-errors: ""
+    creationTimestamp: "2024-11-08T20:34:32Z"
+    generation: 1
+    labels:
+      prometheus: k8s
+      role: alert-rules
+    name: master-rules
+    namespace: ocm-aro-hcp-dev-2eu2aualmisbbbl4b2k5mki061lii0ku-tschneid-hcp
+    resourceVersion: "33755"
+    uid: 597e66a1-de93-4868-97aa-c9b868865e42
+  spec:
+    groups:
+    - name: cluster-network-operator-master.rules
+      rules:
+      - expr: max(ovnkube_controller_egress_routing_via_host)
+        record: cluster:ovnkube_controller_egress_routing_via_host:max
+      - expr: max by(table_name)(ovnkube_controller_admin_network_policies_db_objects)
+        record: cluster:ovnkube_controller_admin_network_policies_db_objects:max
+      - expr: max by(table_name)(ovnkube_controller_baseline_admin_network_policies_db_objects)
+        record: cluster:ovnkube_controller_baseline_admin_network_policies_db_objects:max
+      - expr: max by(direction, action)(ovnkube_controller_admin_network_policies_rules)
+        record: cluster:ovnkube_controller_admin_network_policies_rules:max
+      - expr: max by(direction, action)(ovnkube_controller_baseline_admin_network_policies_rules)
+        record: cluster:ovnkube_controller_baseline_admin_network_policies_rules:max
+      - alert: V4SubnetAllocationThresholdExceeded
+        annotations:
+          description: More than 80% of IPv4 subnets are used. Insufficient IPv4 subnets
+            could degrade provisioning of workloads.
+          runbook_url: https://github.com/openshift/runbooks/blob/master/alerts/cluster-network-operator/V4SubnetAllocationThresholdExceeded.md
+          summary: More than 80% of v4 subnets available to assign to the nodes are
+            allocated. Current v4 subnet allocation percentage is {{ $value | humanizePercentage
+            }}.
+        expr: ovnkube_clustermanager_allocated_v4_host_subnets / ovnkube_clustermanager_num_v4_host_subnets
+          > 0.8
+        for: 10m
+        labels:
+          severity: warning
+      - alert: V6SubnetAllocationThresholdExceeded
+        annotations:
+          description: More than 80% of IPv6 subnets are used. Insufficient IPv6 subnets
+            could degrade provisioning of workloads.
+          summary: More than 80% of the v6 subnets available to assign to the nodes
+            are allocated. Current v6 subnet allocation percentage is {{ $value |
+            humanizePercentage }}.
+        expr: ovnkube_clustermanager_allocated_v6_host_subnets / ovnkube_clustermanager_num_v6_host_subnets
+          > 0.8
+        for: 10m
+        labels:
+          severity: warning
+      - alert: NoRunningOvnControlPlane
+        annotations:
+          description: |
+            Networking control plane is degraded. Networking configuration updates applied to the cluster will not be
+            implemented while there are no OVN Kubernetes control plane pods.
+          runbook_url: https://github.com/openshift/runbooks/blob/master/alerts/cluster-network-operator/NoRunningOvnControlPlane.md
+          summary: There is no running ovn-kubernetes control plane.
+        expr: |
+          absent(up{job="ovnkube-control-plane", namespace="ocm-aro-hcp-dev-2eu2aualmisbbbl4b2k5mki061lii0ku-tschneid-hcp"} == 1)
+        for: 5m
+        labels:
+          namespace: ocm-aro-hcp-dev-2eu2aualmisbbbl4b2k5mki061lii0ku-tschneid-hcp
+          severity: critical
+      - alert: NoOvnClusterManagerLeader
+        annotations:
+          description: |
+            Networking control plane is degraded. Networking configuration updates applied to the cluster will not be
+            implemented while there is no OVN Kubernetes cluster manager leader. Existing workloads should continue to have connectivity.
+            OVN-Kubernetes control plane is not functional.
+          runbook_url: https://github.com/openshift/runbooks/blob/master/alerts/cluster-network-operator/NoOvnClusterManagerLeader.md
+          summary: There is no ovn-kubernetes cluster manager leader.
+        expr: |
+          # Without max_over_time, failed scrapes could create false negatives, see
+          # https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.
+          max by (namespace) (max_over_time(ovnkube_clustermanager_leader[5m])) == 0
+        for: 5m
+        labels:
+          severity: critical
+- apiVersion: monitoring.coreos.com/v1
+  kind: PrometheusRule
+  metadata:
+    annotations:
+      network.operator.openshift.io/cluster-name: management
+      networkoperator.openshift.io/ignore-errors: ""
+    creationTimestamp: "2024-11-08T20:34:27Z"
+    generation: 1
+    labels:
+      prometheus: k8s
+      role: alert-rules
+    name: prometheus-k8s-rules
+    namespace: ocm-aro-hcp-dev-2eu2aualmisbbbl4b2k5mki061lii0ku-tschneid-hcp
+    resourceVersion: "33656"
+    uid: 2f1d734a-47cb-4f73-9dca-daa36f0e3867
+  spec:
+    groups:
+    - name: multus-admission-controller-monitor-service.rules
+      rules:
+      - expr: |
+          max  (network_attachment_definition_enabled_instance_up) by (networks)
+        record: cluster:network_attachment_definition_enabled_instance_up:max
+      - expr: |
+          max  (network_attachment_definition_instances) by (networks)
+        record: cluster:network_attachment_definition_instances:max
+kind: List
+metadata:
+  resourceVersion: ""

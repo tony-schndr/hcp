@@ -1,0 +1,19 @@
+{
+  "properties": {
+    "spec": {
+      "version": {
+        "id": "openshift-v4.17.0",
+        "channelGroup": "stable"
+      },
+      "platform": {
+        "subnetId": "/subscriptions/1d3378d3-5a3f-4712-85a1-2485495dfc4b/resourceGroups/tschneid-hcp-1/providers/Microsoft.Network/virtualNetworks/hcp-vnet/subnets/hcp-subnet",
+        "vmSize": "Standard_D8s_v3",
+        "diskSizeGiB": 30,
+        "diskStorageAccountType": "StandardSSD_LRS"
+      },
+      "replicas": 2
+    }
+  }
+}
+
+

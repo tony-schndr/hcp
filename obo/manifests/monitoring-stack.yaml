@@ -1,0 +1,42 @@
+---
+apiVersion: monitoring.rhobs/v1alpha1
+kind: MonitoringStack
+metadata:
+  name: hypershift-monitoring-stack
+spec:
+  resourceSelector: {}
+  namespaceSelector:
+    matchExpressions:
+      - key: hypershift.openshift.io/monitoring
+        operator: Exists
+  logLevel: info
+  retention: 3h
+  prometheusConfig:
+    replicas: 2
+    remoteWrite:   # 👈 Remote write
+      - url: "https://aro-hcp-monitor-a0696-rokp.eastus-1.metrics.ingest.monitor.azure.com/dataCollectionRules/dcr-42ada8b7dd2f4a029c9ffc1fa737ec05/streams/Microsoft-PrometheusMetrics/api/v1/write?api-version=2023-04-24" # 👈 URL of the Azure MonitorWorkspace Remote write endpoint
+        azureAd:
+          cloud: 'AzurePublic'
+          managedIdentity:
+            clientId: "7d5fe46f-0e45-4107-a4cb-c07623ec181d" # 👈 User assigned identity is assigned to the VMs in the aks managed resource group
+        queueConfig:
+          capacity: 2500
+          maxShards: 500
+          minShards: 1
+          maxSamplesPerSend: 2000
+          batchSendDeadline: 60s
+          minBackoff: 30ms
+          maxBackoff: 256s
+        metadataConfig:
+          send: false
+        writeRelabelConfigs: # 👈 Might need some work to relabel/drop metrics
+        - sourceLabels: [__name__, source]
+          action: keep
+          separator: ;
+          regex: ".*" 
+  alertmanagerConfig:
+    disabled: true
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
