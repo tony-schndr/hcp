@@ -1,3 +1,5 @@
+#!/bin/bash
+
 export CUSTOMER_RG_NAME="tschneid-hcp-1"
 export CUSTOMER_VNET_NAME="hcp-vnet"
 export CUSTOMER_VNET_SUBNET1="hcp-subnet"
