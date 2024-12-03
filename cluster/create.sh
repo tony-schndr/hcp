@@ -1,11 +1,6 @@
 #!/bin/bash
 
-export CUSTOMER_RG_NAME="tschneid-hcp-1"
-export CUSTOMER_VNET_NAME="hcp-vnet"
-export CUSTOMER_VNET_SUBNET1="hcp-subnet"
-export CUSTOMER_NSG="hcp-nsg-1"
-export LOCATION="eastus"
-
+source ./env
 az group create --name "${CUSTOMER_RG_NAME}" --location ${LOCATION}
 
 az network nsg create --resource-group ${CUSTOMER_RG_NAME} --name ${CUSTOMER_NSG} --location ${LOCATION}

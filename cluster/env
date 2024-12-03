@@ -1,0 +1,10 @@
+#!/bin/bash 
+
+
+export RESOURCEGROUP=tschneid-hcp-01
+export LOCATION=eastus
+
+export CUSTOMER_VNET_NAME="hcp-vnet"
+export CUSTOMER_RG_NAME=${RESOURCEGROUP}
+export CUSTOMER_VNET_SUBNET1="hcp-subnet"
+export CUSTOMER_NSG="hcp-nsg-01"
