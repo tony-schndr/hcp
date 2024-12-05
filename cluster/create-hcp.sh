@@ -26,7 +26,7 @@ DATA=$(cat <<EOF
       },
       "proxy": {},
       "platform": {
-        "managedResourceGroup": "tschneid-hcp-mrg",
+        "managedResourceGroup": "${MANAGED_RESOURCE_GROUP}",
         "subnetId": "/subscriptions/1d3378d3-5a3f-4712-85a1-2485495dfc4b/resourceGroups/${RESOURCEGROUP}/providers/Microsoft.Network/virtualNetworks/hcp-vnet/subnets/hcp-subnet",
         "outboundType": "loadBalancer",
         "networkSecurityGroupId": "/subscriptions/1d3378d3-5a3f-4712-85a1-2485495dfc4b/resourceGroups/${RESOURCEGROUP}/providers/Microsoft.Network/networkSecurityGroups/${CUSTOMER_NSG}"
